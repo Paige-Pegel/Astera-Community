@@ -1,0 +1,2970 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+The Astera Geographic Survey | Interactive Commonwealth Atlas
+</title>
+
+
+<!-- Fonts -->
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+
+
+<!-- Leaflet GIS -->
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+
+
+<style>
+
+
+/* =====================================
+GLOBAL STYLE
+===================================== */
+
+
+*{
+
+margin:0;
+padding:0;
+box-sizing:border-box;
+scroll-behavior:smooth;
+
+}
+
+
+
+:root{
+
+
+--navy:#12343b;
+--teal:#1b998b;
+--gold:#d4af37;
+--paper:#f3ead3;
+--text:#222;
+--card:white;
+
+
+}
+
+
+
+.dark{
+
+
+--paper:#111827;
+--text:#eeeeee;
+--card:#1f2937;
+--navy:#062b35;
+
+
+}
+
+
+
+
+body{
+
+
+font-family:"Poppins",sans-serif;
+
+background:var(--paper);
+
+color:var(--text);
+
+line-height:1.7;
+
+transition:.4s;
+
+
+}
+
+
+
+
+
+/* =====================================
+NAVIGATION
+===================================== */
+
+
+nav{
+
+
+position:fixed;
+
+top:0;
+
+width:100%;
+
+
+background:rgba(18,52,59,.95);
+
+
+padding:15px;
+
+
+z-index:9999;
+
+
+border-bottom:
+
+3px solid var(--gold);
+
+
+}
+
+
+
+nav ul{
+
+
+display:flex;
+
+justify-content:center;
+
+flex-wrap:wrap;
+
+gap:20px;
+
+list-style:none;
+
+
+}
+
+
+
+nav a{
+
+
+color:white;
+
+text-decoration:none;
+
+font-weight:bold;
+
+
+}
+
+
+nav a:hover{
+
+
+color:var(--gold);
+
+
+}
+
+
+
+.mode{
+
+
+position:absolute;
+
+right:20px;
+
+top:10px;
+
+padding:10px 15px;
+
+border:none;
+
+border-radius:25px;
+
+background:var(--gold);
+
+cursor:pointer;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+HERO
+===================================== */
+
+
+.hero{
+
+
+height:100vh;
+
+
+background:
+
+linear-gradient(
+
+rgba(0,0,0,.65),
+
+rgba(0,0,0,.65)
+
+),
+
+
+url(
+"https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80"
+);
+
+
+
+background-size:cover;
+
+background-position:center;
+
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+align-items:center;
+
+
+text-align:center;
+
+
+padding:40px;
+
+
+color:white;
+
+
+}
+
+
+
+.hero h1{
+
+
+font-family:"Cinzel",serif;
+
+
+font-size:4.5rem;
+
+
+letter-spacing:5px;
+
+
+}
+
+
+
+.hero h2{
+
+
+color:#ffd166;
+
+font-family:"Cinzel",serif;
+
+margin:20px;
+
+}
+
+
+.hero p{
+
+
+max-width:900px;
+
+font-size:1.2rem;
+
+
+}
+
+
+
+.button{
+
+
+margin-top:25px;
+
+background:var(--gold);
+
+border:none;
+
+padding:15px 35px;
+
+border-radius:30px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+
+}
+
+
+
+.button:hover{
+
+
+transform:scale(1.08);
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+SECTIONS
+===================================== */
+
+
+section{
+
+
+padding:100px 8%;
+
+
+}
+
+
+
+h2{
+
+
+font-family:"Cinzel",serif;
+
+font-size:2.5rem;
+
+color:var(--navy);
+
+margin-bottom:25px;
+
+
+}
+
+
+
+.dark h2{
+
+
+color:#ffd166;
+
+
+}
+
+
+
+
+
+/* =====================================
+CARDS
+===================================== */
+
+
+.grid{
+
+
+display:grid;
+
+grid-template-columns:
+
+repeat(auto-fit,minmax(260px,1fr));
+
+
+gap:25px;
+
+
+}
+
+
+
+
+.card{
+
+
+background:var(--card);
+
+padding:25px;
+
+border-radius:20px;
+
+
+box-shadow:
+
+0 10px 30px rgba(0,0,0,.15);
+
+
+transition:.3s;
+
+
+}
+
+
+
+.card:hover{
+
+
+transform:translateY(-8px);
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+TIMELINE
+===================================== */
+
+
+.timeline{
+
+
+border-left:
+
+5px solid var(--teal);
+
+
+padding-left:30px;
+
+
+}
+
+
+
+
+.timeline-item{
+
+
+background:var(--card);
+
+padding:25px;
+
+margin:30px 0;
+
+border-radius:15px;
+
+
+box-shadow:
+
+0 5px 20px rgba(0,0,0,.15);
+
+
+}
+
+
+
+
+
+
+/* =====================================
+LEAFLET MAP
+===================================== */
+
+
+.atlas-container{
+
+
+border-radius:25px;
+
+overflow:hidden;
+
+
+box-shadow:
+
+0 15px 40px rgba(0,0,0,.25);
+
+
+border:
+
+5px solid var(--gold);
+
+
+}
+
+
+
+#asteraMap{
+
+
+height:700px;
+
+width:100%;
+
+
+}
+
+
+
+#regionInfo{
+
+
+margin-top:25px;
+
+background:var(--card);
+
+padding:25px;
+
+border-radius:20px;
+
+
+}
+
+
+
+
+
+
+
+/* =====================================
+FOOTER
+===================================== */
+
+
+footer{
+
+
+background:var(--navy);
+
+color:white;
+
+padding:50px;
+
+text-align:center;
+
+
+}
+
+
+
+
+@media(max-width:700px){
+
+
+.hero h1{
+
+
+font-size:2.8rem;
+
+
+}
+
+
+
+}
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+
+
+
+
+<!-- =====================================
+NAVIGATION
+===================================== -->
+
+
+<nav>
+
+
+<ul>
+
+
+<li>
+<a href="#about">
+Archive
+</a>
+</li>
+
+
+<li>
+<a href="#history">
+History
+</a>
+</li>
+
+
+<li>
+<a href="#map">
+Atlas
+</a>
+</li>
+
+
+<li>
+<a href="#government">
+Society
+</a>
+</li>
+
+
+<li>
+<a href="#economy">
+Economy
+</a>
+</li>
+
+
+<li>
+<a href="#theory">
+Research
+</a>
+</li>
+
+
+
+</ul>
+
+
+<button class="mode"
+onclick="toggleMode()">
+
+🌙
+
+</button>
+
+
+</nav>
+
+
+
+
+
+
+
+
+<!-- =====================================
+HERO
+===================================== -->
+
+
+<header class="hero">
+
+
+<h1>
+The Astera Geographic Survey
+</h1>
+
+
+
+<h2>
+Interactive Commonwealth Atlas
+</h2>
+
+
+
+<p>
+
+
+A geographic reconstruction of Astera,
+a decentralized civilization organized through
+community cooperation, ecological stewardship,
+and voluntary exchange.
+
+
+</p>
+
+
+
+
+<button class="button"
+onclick="discoverAstera()">
+
+Open Survey Record
+
+</button>
+
+
+
+<p id="fact"></p>
+
+
+
+</header>
+
+
+
+
+
+
+
+
+<!-- =====================================
+ABOUT
+===================================== -->
+
+
+<section id="about">
+
+
+<h2>
+📜 Commonwealth Archive
+</h2>
+
+
+
+<p>
+
+
+The Astera Geographic Survey examines how a stateless society
+could organize itself across a real geographic landscape.
+
+This atlas overlays fictional communities onto the South Island
+of Aotearoa New Zealand to explore geography, economy,
+and social organization.
+
+
+</p>
+
+
+
+
+
+<div class="grid">
+
+
+
+<div class="card">
+
+
+<h3>
+🌎 Community Networks
+</h3>
+
+
+<p>
+
+Independent communities coordinate through cooperation,
+trust, and shared agreements.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🌱 Ecological Stewardship
+</h3>
+
+
+<p>
+
+Natural landscapes are managed as shared responsibilities.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🤝 Voluntary Exchange
+</h3>
+
+
+<p>
+
+Trade relationships connect communities without centralized control.
+
+</p>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+<!-- =====================================
+HISTORY
+===================================== -->
+
+
+<section id="history">
+
+
+<h2>
+📜 Historical Timeline
+</h2>
+
+
+
+<div class="timeline">
+
+
+<div class="timeline-item">
+
+
+<h3>
+2025 — Centralized Era
+</h3>
+
+
+<p>
+
+Communities begin experimenting with alternative systems.
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="timeline-item">
+
+
+<h3>
+2050 — Astera Compact
+</h3>
+
+
+<p>
+
+Regional communities create voluntary cooperation agreements.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="timeline-item">
+
+
+<h3>
+2100 — Commonwealth Network
+</h3>
+
+
+<p>
+
+Astera becomes a connected civilization without a central state.
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- =====================================
+MAP SECTION
+===================================== -->
+
+
+<section id="map">
+
+
+<h2>
+🗺 Astera Geographic Survey Atlas
+</h2>
+
+
+
+<p>
+
+
+This interactive GIS map displays Astera communities
+placed across the geography of New Zealand's South Island.
+
+The map represents relationships and ecological regions,
+not political borders.
+
+
+</p>
+
+
+
+
+<div class="atlas-container">
+
+
+<div id="asteraMap"></div>
+
+
+</div>
+
+
+
+<div id="regionInfo">
+
+
+Select an Astera community marker to view survey information.
+
+
+</div>
+
+
+
+</section>
+<!-- =====================================
+LEAFLET GIS ENGINE
+===================================== -->
+
+
+<!-- Leaflet Javascript -->
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+
+
+<script>
+
+
+/*
+====================================================
+ASTERA SOUTH ISLAND GIS ATLAS
+====================================================
+*/
+
+
+
+// Create map centered on South Island
+
+
+const asteraMap = L.map(
+
+"asteraMap"
+
+)
+
+.setView(
+
+[-44.2,170.2],
+
+7
+
+);
+
+
+
+
+
+
+
+// Base map layer
+
+
+const terrain = L.tileLayer(
+
+
+"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+
+{
+
+
+attribution:
+
+"&copy; OpenStreetMap contributors"
+
+
+}
+
+
+);
+
+
+
+terrain.addTo(
+
+asteraMap
+
+);
+
+
+
+
+
+
+
+
+/*
+====================================================
+ASTERA COMMUNITY DATABASE
+====================================================
+*/
+
+
+const asteraCommunities = [
+
+
+
+{
+
+
+name:
+
+"Aurora Highlands Research Community 🌌",
+
+
+coords:
+
+[-43.73,170.10],
+
+
+description:
+
+`
+
+<b>Survey Region:</b> Southern Alps
+
+<br><br>
+
+
+Aurora serves as Astera's scientific and educational center.
+
+<br><br>
+
+
+Primary functions:
+
+<ul>
+
+<li>Climate research</li>
+
+<li>Astronomy</li>
+
+<li>Glacial studies</li>
+
+<li>Mountain ecology</li>
+
+</ul>
+
+
+Population:
+
+42,000
+
+
+`
+
+
+},
+
+
+
+
+
+{
+
+
+name:
+
+"Verdant Canterbury Cooperative 🌱",
+
+
+coords:
+
+[-43.53,172.05],
+
+
+description:
+
+`
+
+<b>Survey Region:</b> Canterbury Plains
+
+<br><br>
+
+
+Agricultural cooperative network focused on sustainable food systems.
+
+<br><br>
+
+
+Primary functions:
+
+<ul>
+
+<li>Regenerative agriculture</li>
+
+<li>Food production</li>
+
+<li>Ecological restoration</li>
+
+</ul>
+
+
+Population:
+
+65,000
+
+
+`
+
+
+},
+
+
+
+
+
+{
+
+
+name:
+
+"Maris Harbor Exchange Community ⚓",
+
+
+coords:
+
+[-45.87,170.50],
+
+
+description:
+
+`
+
+<b>Survey Region:</b> Otago Coast
+
+<br><br>
+
+
+Astera's maritime exchange community.
+
+<br><br>
+
+
+Primary functions:
+
+<ul>
+
+<li>Trade</li>
+
+<li>Cultural exchange</li>
+
+<li>Marine research</li>
+
+</ul>
+
+
+Population:
+
+58,000
+
+
+`
+
+
+},
+
+
+
+
+
+{
+
+
+name:
+
+"Stonebridge Engineering Collective 🔨",
+
+
+coords:
+
+[-45.03,169.20],
+
+
+description:
+
+`
+
+<b>Survey Region:</b> Central Otago
+
+<br><br>
+
+
+Engineering and manufacturing cooperative.
+
+<br><br>
+
+
+Primary functions:
+
+<ul>
+
+<li>Infrastructure</li>
+
+<li>Construction</li>
+
+<li>Technology</li>
+
+</ul>
+
+
+Population:
+
+37,000
+
+
+`
+
+
+},
+
+
+
+
+
+
+{
+
+
+name:
+
+"Solara Energy Plateau ☀",
+
+
+coords:
+
+[-45.10,169.70],
+
+
+description:
+
+`
+
+<b>Survey Region:</b> Central Otago Highlands
+
+<br><br>
+
+
+Renewable energy and climate adaptation zone.
+
+<br><br>
+
+
+Primary functions:
+
+<ul>
+
+<li>Solar research</li>
+
+<li>Hydropower</li>
+
+<li>Environmental engineering</li>
+
+</ul>
+
+
+Population:
+
+49,000
+
+
+`
+
+
+}
+
+
+
+];
+
+
+
+
+
+
+
+
+
+/*
+====================================================
+COMMUNITY MARKERS
+====================================================
+*/
+
+
+const communityLayer = L.layerGroup();
+
+
+
+
+asteraCommunities.forEach(
+
+community => {
+
+
+
+let marker = L.marker(
+
+community.coords
+
+);
+
+
+
+marker.bindPopup(
+
+`
+
+<h3>
+
+${community.name}
+
+</h3>
+
+
+${community.description}
+
+
+`
+
+);
+
+
+
+
+
+marker.on(
+
+"click",
+
+function(){
+
+
+
+document.getElementById(
+
+"regionInfo"
+
+)
+
+.innerHTML =
+
+
+
+`
+
+<h3>
+📍 ${community.name}
+</h3>
+
+
+${community.description}
+
+
+`;
+
+
+
+}
+
+
+
+);
+
+
+
+
+
+marker.addTo(
+
+communityLayer
+
+);
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+/*
+====================================================
+TRADE ROUTES
+====================================================
+*/
+
+
+const tradeRoute = L.polyline(
+
+
+asteraCommunities.map(
+
+community => community.coords
+
+),
+
+
+
+{
+
+
+color:
+
+"#d4af37",
+
+
+weight:
+
+5,
+
+
+dashArray:
+
+"12,12"
+
+
+}
+
+
+
+);
+
+
+
+
+
+
+
+
+
+/*
+====================================================
+ECOLOGICAL ZONES
+====================================================
+*/
+
+
+const ecologyLayer = L.layerGroup();
+
+
+
+
+L.circle(
+
+
+[-43.73,170.10],
+
+
+{
+
+
+radius:40000,
+
+
+color:"#1b998b",
+
+
+fillOpacity:.25
+
+
+}
+
+
+)
+
+
+.bindPopup(
+
+"Southern Alps Conservation Zone"
+
+)
+
+
+.addTo(
+
+ecologyLayer
+
+);
+
+
+
+
+
+
+
+L.circle(
+
+
+[-45.10,169.70],
+
+
+{
+
+
+radius:35000,
+
+
+color:"#1b998b",
+
+
+fillOpacity:.25
+
+
+}
+
+
+)
+
+
+.bindPopup(
+
+"Central Otago Renewable Research Zone"
+
+)
+
+
+.addTo(
+
+ecologyLayer
+
+);
+
+
+
+
+
+
+
+
+
+/*
+====================================================
+ADD LAYERS
+====================================================
+*/
+
+
+communityLayer.addTo(
+
+asteraMap
+
+);
+
+
+
+tradeRoute.addTo(
+
+asteraMap
+
+);
+
+
+
+ecologyLayer.addTo(
+
+asteraMap
+
+);
+
+
+
+
+
+
+
+
+/*
+====================================================
+LAYER CONTROL
+====================================================
+*/
+
+
+L.control.layers(
+
+
+{
+
+
+"Terrain":
+
+terrain
+
+
+},
+
+
+
+{
+
+
+"🏘 Astera Communities":
+
+communityLayer,
+
+
+"━━ Trade Network":
+
+tradeRoute,
+
+
+"🌱 Ecological Zones":
+
+ecologyLayer
+
+
+}
+
+
+)
+
+.addTo(
+
+asteraMap
+
+);
+
+
+
+
+
+
+
+/*
+====================================================
+MAP LEGEND
+====================================================
+*/
+
+
+const legend = L.control({
+
+position:"bottomright"
+
+});
+
+
+
+
+legend.onAdd = function(){
+
+
+
+let div = L.DomUtil.create(
+
+"div"
+
+);
+
+
+
+div.style.background="white";
+
+div.style.padding="15px";
+
+div.style.borderRadius="15px";
+
+
+
+div.innerHTML=
+
+
+`
+
+<b>
+Astera Atlas Layers
+</b>
+
+<br><br>
+
+📍 Communities
+
+<br>
+
+━━ Trade Routes
+
+<br>
+
+🌱 Ecology
+
+
+`;
+
+
+
+return div;
+
+
+
+};
+
+
+
+legend.addTo(
+
+asteraMap
+
+);
+
+
+
+
+
+</script>
+<!-- =====================================
+SOCIAL ORGANIZATION
+===================================== -->
+
+
+<section id="government">
+
+
+<h2>
+🏛 Commonwealth Social Organization
+</h2>
+
+
+
+<p>
+
+Astera does not operate through a centralized government.
+Instead, coordination emerges from local communities,
+regional agreements, and voluntary cooperation.
+
+</p>
+
+
+
+<div class="grid">
+
+
+
+<div class="card">
+
+
+<h3>
+🏘 Community Assemblies
+</h3>
+
+
+<p>
+
+Local communities manage their own resources,
+projects, and priorities through direct participation.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+📜 Temporary Delegates
+</h3>
+
+
+<p>
+
+Delegates coordinate larger projects but remain accountable
+to the communities they represent.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+⭐ Reputation-Based Leadership
+</h3>
+
+
+<p>
+
+Influence comes from knowledge, experience,
+and contribution rather than permanent authority.
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- =====================================
+ECONOMY
+===================================== -->
+
+
+<section id="economy">
+
+
+<h2>
+💰 Economic Survey
+</h2>
+
+
+
+<p>
+
+Astera combines cooperative production,
+voluntary exchange, and mutual support networks.
+
+</p>
+
+
+
+<div class="grid">
+
+
+
+<div class="card">
+
+
+<h3>
+⚒ Worker Cooperatives
+</h3>
+
+
+<p>
+
+Organizations are collectively managed by participants,
+sharing ownership and decision-making.
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🔄 Regional Exchange Networks
+</h3>
+
+
+<p>
+
+Communities trade resources through agreements,
+relationships, and long-term cooperation.
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🤝 Mutual Aid Systems
+</h3>
+
+
+<p>
+
+Healthcare, emergency response,
+and social assistance are supported through communities.
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🌊 Kula-Inspired Exchange
+</h3>
+
+
+<p>
+
+Ceremonial exchange strengthens trust and relationships
+between distant communities.
+
+</p>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- =====================================
+JUSTICE
+===================================== -->
+
+
+<section id="justice">
+
+
+<h2>
+⚖ Justice & Conflict Resolution
+</h2>
+
+
+
+
+<p>
+
+The Astera justice model focuses on repairing harm,
+restoring relationships, and maintaining community trust.
+
+</p>
+
+
+
+
+<div class="grid">
+
+
+
+<div class="card">
+
+
+<h3>
+🗣 Mediation Circles
+</h3>
+
+
+<p>
+
+Community members help resolve conflicts through discussion
+and negotiated solutions.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🌱 Restorative Justice
+</h3>
+
+
+<p>
+
+Individuals responsible for harm work to repair damage
+and rebuild social relationships.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+⚖ Independent Arbitration
+</h3>
+
+
+<p>
+
+Specialists assist with disputes involving multiple communities.
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- =====================================
+EDUCATION
+===================================== -->
+
+
+<section id="education">
+
+
+<h2>
+🎓 Education & Knowledge Networks
+</h2>
+
+
+
+<p>
+
+Education in Astera combines scientific knowledge,
+practical skills, ecological understanding,
+and social cooperation.
+
+</p>
+
+
+
+
+<div class="grid">
+
+
+
+<div class="card">
+
+
+<h3>
+🔬 Aurora Research Network
+</h3>
+
+
+<p>
+
+Universities and research centers support science,
+technology, and environmental studies.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🌱 Ecological Learning
+</h3>
+
+
+<p>
+
+Communities teach conservation,
+agriculture, and sustainable resource management.
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🤝 Social Philosophy
+</h3>
+
+
+<p>
+
+Conflict resolution, communication,
+and cooperation are core educational subjects.
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- =====================================
+POWER STRUCTURE
+===================================== -->
+
+
+<section>
+
+
+<h2>
+🔄 How Power Moves Through Astera
+</h2>
+
+
+
+<p>
+
+Unlike traditional states where authority flows downward,
+Astera distributes decision-making through connected communities.
+
+</p>
+
+
+
+
+<div class="grid">
+
+
+
+<div class="card">
+
+
+<h3>
+👤 Individuals
+</h3>
+
+
+<p>
+
+Citizens participate directly in local decisions.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🏘 Communities
+</h3>
+
+
+<p>
+
+Local assemblies organize daily social,
+economic, and environmental activities.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+🌎 Commonwealth Network
+</h3>
+
+
+<p>
+
+Communities cooperate on regional transportation,
+trade, research, and environmental projects.
+
+</p>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- =====================================
+ACADEMIC FOUNDATIONS
+===================================== -->
+
+
+<section id="theory">
+
+
+<h2>
+📚 Anthropological Research Archive
+</h2>
+
+
+
+
+<div class="grid">
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+George Dalton
+</h3>
+
+
+<p>
+
+Dalton's research on stateless societies demonstrates
+that complex economic systems can exist without centralized
+political authority.
+
+</p>
+
+
+
+<ul>
+
+<li>
+Reciprocity
+</li>
+
+<li>
+Kinship Networks
+</li>
+
+<li>
+Ceremonial Exchange
+</li>
+
+<li>
+Customary Traditions
+</li>
+
+
+</ul>
+
+
+
+
+<p>
+
+Astera adapts these concepts through community trust,
+exchange relationships, and cooperative organization.
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+Heng-Fu Zou
+</h3>
+
+
+<p>
+
+Zou's work examines how voluntary institutions,
+markets, and organizations can provide services
+outside traditional government structures.
+
+</p>
+
+
+
+<ul>
+
+<li>
+Voluntary Organizations
+</li>
+
+<li>
+Arbitration
+</li>
+
+<li>
+Cooperative Systems
+</li>
+
+
+</ul>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+The Astera Model
+</h3>
+
+
+<p>
+
+Astera combines human geography, anthropology,
+and economic theory to imagine a decentralized
+civilization built on cooperation.
+
+</p>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</section>
+<!-- =====================================
+ASTERA SURVEY STATISTICS
+===================================== -->
+
+
+<section>
+
+
+<h2>
+📊 Commonwealth Survey Indicators
+</h2>
+
+
+
+<div class="grid">
+
+
+
+<div class="card">
+
+
+<h3>
+98%
+</h3>
+
+
+<p>
+Community Participation Index
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+94%
+</h3>
+
+
+<p>
+Conflict Resolution Success
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+100%
+</h3>
+
+
+<p>
+Education Accessibility
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+87%
+</h3>
+
+
+<p>
+Renewable Energy Integration
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- =====================================
+GEOGRAPHIC RECORDS
+===================================== -->
+
+
+<section>
+
+
+<h2>
+🧭 Geographic Survey Records
+</h2>
+
+
+
+
+<div class="grid">
+
+
+
+<div class="card">
+
+
+<h3>
+Record A-01 — Aurora Highlands
+</h3>
+
+
+<p>
+
+Southern Alps Research Region
+
+<br><br>
+
+Primary functions:
+
+</p>
+
+
+<ul>
+
+<li>Climate Science</li>
+<li>Astronomy</li>
+<li>Mountain Ecology</li>
+
+</ul>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+Record A-02 — Verdant Canterbury
+</h3>
+
+
+<p>
+
+Canterbury Agricultural Region
+
+<br><br>
+
+Primary functions:
+
+</p>
+
+
+<ul>
+
+<li>Regenerative Farming</li>
+<li>Food Networks</li>
+<li>Ecological Restoration</li>
+
+</ul>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+Record A-03 — Maris Harbor
+</h3>
+
+
+<p>
+
+Otago Coastal Exchange Region
+
+<br><br>
+
+Primary functions:
+
+</p>
+
+
+<ul>
+
+<li>Trade</li>
+<li>Marine Research</li>
+<li>Cultural Exchange</li>
+
+</ul>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+Record A-04 — Stonebridge
+</h3>
+
+
+<p>
+
+Central Otago Engineering Region
+
+<br><br>
+
+Primary functions:
+
+</p>
+
+
+<ul>
+
+<li>Infrastructure</li>
+<li>Manufacturing</li>
+<li>Technology</li>
+
+</ul>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+Record A-05 — Solara Plateau
+</h3>
+
+
+<p>
+
+Central Otago Energy Region
+
+<br><br>
+
+Primary functions:
+
+</p>
+
+
+<ul>
+
+<li>Solar Technology</li>
+<li>Hydropower</li>
+<li>Climate Adaptation</li>
+
+</ul>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- =====================================
+FOOTER
+===================================== -->
+
+
+<footer>
+
+
+<h2 style="color:white">
+
+The Astera Geographic Survey
+
+</h2>
+
+
+
+<p>
+
+Interactive Commonwealth Atlas
+
+</p>
+
+
+<br>
+
+
+<p>
+
+A fictional geographic reconstruction exploring
+stateless organization, cooperation, and human geography.
+
+</p>
+
+
+<br>
+
+
+<p>
+
+Inspired by George Dalton's
+<em>
+Aboriginal Economies in Stateless Societies
+</em>
+
+</p>
+
+
+</footer>
+
+
+
+
+
+
+
+
+<!-- =====================================
+ASTERA FUNCTIONS
+===================================== -->
+
+
+<script>
+
+
+/*
+=====================================
+DARK MODE
+=====================================
+*/
+
+
+function toggleMode(){
+
+
+document.body.classList.toggle(
+
+"dark"
+
+);
+
+
+}
+
+
+
+
+
+
+
+/*
+=====================================
+DISCOVERY BUTTON
+=====================================
+*/
+
+
+const asteraFacts=[
+
+
+"Astera communities coordinate through voluntary agreements.",
+
+
+"Trade relationships replace centralized economic planning.",
+
+
+"Leadership is based on trust and contribution.",
+
+
+"Ecological stewardship is considered a shared responsibility.",
+
+
+"Knowledge networks connect communities across the Commonwealth."
+
+
+];
+
+
+
+
+
+function discoverAstera(){
+
+
+
+let fact =
+
+asteraFacts[
+
+Math.floor(
+
+Math.random()*asteraFacts.length
+
+)
+
+];
+
+
+
+document.getElementById(
+
+"fact"
+
+)
+
+.innerHTML=fact;
+
+
+
+}
+
+
+
+
+
+
+
+
+/*
+=====================================
+LEAFLET MAP FIX
+=====================================
+*/
+
+
+window.onload=function(){
+
+
+setTimeout(()=>{
+
+
+if(typeof asteraMap !== "undefined"){
+
+
+asteraMap.invalidateSize();
+
+
+}
+
+
+},500);
+
+
+
+};
+
+
+
+</script>
+
+
+
+
+
+
+</body>
+
+</html>
